@@ -1,7 +1,7 @@
 {
   "project": "spatial-loading-studio",
-  "source_commit": "60ce5d88e923d04614adfd2147ba552d3e460fe3",
-  "source_inventory_sha256": "0da34e5e5937aab0db8c7006c8b856a4758bd0f544387c9be66e0e0206aad0f5",
+  "source_commit": "8b9dd49c5a7aaef7caf57535c7bafba6ec22062b",
+  "source_inventory_sha256": "a9cc365cd149207f7a967bf2bd8717941b05b5a560db38ea2718ccbf441d248d",
   "assets": [
     {
       "path": "assets/index-BMg_O58_.css",
@@ -9,9 +9,9 @@
       "sha256": "b130f6b85a588c95f1fe449413857a1aa34b5758fad43b79b35b91bfb0ccb118"
     },
     {
-      "path": "assets/index-BscM1CsA.js",
-      "bytes": 1172944,
-      "sha256": "ee5d378018a78d61e20690c1db1be59373bc687b6e14b6d2e5dcc759007cfd29"
+      "path": "assets/index-Dz14C4v6.js",
+      "bytes": 1175654,
+      "sha256": "49933f9e3a81ca21ea7f46320d9e3e830261855384722a8b21abb84f9e82cb86"
     },
     {
       "path": "assets/public-sans-latin-ext-wght-normal-MQgHevqp.woff2",
@@ -31,7 +31,7 @@
     {
       "path": "index.html",
       "bytes": 1479,
-      "sha256": "6e78981aca666724f83e6fb8f8a5d79a3db4a15f93591e992c4ed7b94d854c81"
+      "sha256": "330f5023ed9c4a6e499f0cb145246f095f5602a214bde4036c8c297f4a245d12"
     },
     {
       "path": "licenses/PublicSans-OFL.txt",
