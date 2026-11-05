@@ -5,7 +5,7 @@
 Development version.
 
 - Integer-millimetre bounded-box authority with strict interior-overlap rules and 24 exact right-handed orientations.
-- Atomic add, move, resize, rotate, remove, container resize and bounded document import.
+- Atomic add, move, resize, rotate, remove, container resize and bounded document import. New-box drafts use a bounded validated free-position suggestion and an identified unapplied preview outside counts/history/exports.
 - Twenty-command undo, canonical ASCII ID ordering and deterministic JSON/SVG exports.
 - React Three Fiber scene, bounds-based camera fit/reset, linked selection and selectable orthographic fallback.
 - Portuguese default interface and complete English switch, separate from document/history.

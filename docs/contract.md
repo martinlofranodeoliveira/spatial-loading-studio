@@ -83,3 +83,7 @@ Container: `[6000,2400,2400]`. Six boxes, each `[1000,800,800]`, identity orient
 ```
 
 Occupied volume: 3840000000 mm³. Container: 34560000000 mm³. Fraction: 1/9. Rounded percentage: 11.1% (11,1% in the Portuguese interface). The fixtures have no industry container/load certification. No support, gravity, weight or optimal-packing inference is valid.
+
+### New-box draft suggestions
+
+The UI adapter tries at most `1 + 3n` origin/positive-face candidates, deduplicated and sorted by Y, then Z, then X. It clamps initial dimensions to the container, rejects bounds/overlap candidates, and validates the complete proposed document before returning a suggestion. A missing suggestion is not a proof of insufficient free volume. A complete valid draft has a separate non-selectable translucent/dashed preview; an invalid draft has only a diagnostic. Neither enters the accepted document, statistics, exported JSON/SVG or history. Apply validates authoritatively and adds one command; Cancel discards only the draft. Starting or editing a draft revokes a pending older file import. This heuristic is not packing optimization.

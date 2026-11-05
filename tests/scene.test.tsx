@@ -57,3 +57,18 @@ test('actual PerspectiveCamera fits all8 corners at mobile/desktop/extreme dimen
     assert.equal(camera.near,.1,'nearplane permits close inspection afterfit');
   }
 });
+
+
+test('unapplied preview is a distinct translucent non-pickable disposable scene object', async () => {
+  const document=validate({version:1,unit:'mm',container:[1000,1000,1000],boxes:[]});
+  const box=validate({...document,boxes:[{id:'draft',label:'',size:[100,200,300],position:[10,20,30],orientation:IDENTITY}]}).boxes[0];
+  const renderer=await ReactThreeTestRenderer.create(<SceneContent document={document} selected="" onSelect={()=>{throw Error('draft selected');}} draftPreview={box}/>);
+  const mesh=renderer.scene.findByProps({name:'draft:draft'}).instance as THREE.Mesh<THREE.BoxGeometry,THREE.MeshStandardMaterial>;
+  assert.deepEqual(mesh.position.toArray(),[60,120,180]);assert.equal(mesh.userData.draft,true);
+  assert.equal(mesh.material.transparent,true);assert.equal(mesh.material.opacity,.22);assert.equal(mesh.material.depthWrite,false);
+  const hits:THREE.Intersection[]=[];mesh.raycast(new THREE.Raycaster(),hits);assert.equal(hits.length,0);
+  let disposed=0;mesh.geometry.addEventListener('dispose',()=>disposed++);mesh.material.addEventListener('dispose',()=>disposed++);
+  await renderer.update(<SceneContent document={document} selected="" onSelect={()=>undefined}/>);
+  assert.equal(disposed,2);assert.equal(renderer.scene.findAllByProps({name:'draft:draft'}).length,0);
+  await renderer.unmount();
+});

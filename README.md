@@ -43,11 +43,12 @@ This is a static build, not an offline service-worker installation. A previously
 2. Set minimum X to `100` and apply. The box remains above the lower layer without a support calculation.
 3. Try minimum X `12000`. The error links to the field; accepted geometry, selection and history remain unchanged.
 4. Restore X `100`, rotate +90° about X, and undo. Rotation changes the exact orientation even when oriented dimensions are equal.
-5. Export JSON or the standalone three-view SVG. Exports always use accepted geometry, never drafts.
+5. Choose **Add box**. In the original fixture the proposed minimum corner is `[3000,0,0]` mm; the original six boxes remain accepted until Apply. Cancel discards the identified preview.
+6. Export JSON or the standalone three-view SVG. Exports always use accepted geometry, never drafts.
 
 Camera movement is opt-in: choose **Navigate in 3D** to orbit, pan or zoom. **End navigation** or Escape disconnects the controls and returns focus to the toggle. Inactive navigation leaves ordinary page scrolling available. Fit/reset and object selection remain available without entering navigation mode. This lifecycle is checked with real controls in a simulated DOM; real touch/wheel behavior still requires browser QA.
 
-The inspector edits **base dimensions**, position and label. Its oriented-dimension readout reflects the current matrix. Container resizing is under **Bounding volume**. New boxes start with editable dimensions and position; addition does not search for free space. The import section accepts a file or pasted JSON. A valid import is one undoable replacement, even when identical to the current document.
+The inspector edits **base dimensions**, position and label. Its oriented-dimension readout reflects the current matrix. Container resizing is under **Bounding volume**. New boxes start with editable dimensions and a validated free-position suggestion when one is found. The bounded heuristic checks the origin and the three positive faces of each accepted box (at most 601 candidates); it is not a packing optimizer and failure to find a candidate does not prove the volume is full. Default dimensions are clamped to the container. A valid new-box draft appears as an identified translucent preview in 3D and dashed outlines in the projections. Invalid drafts have a textual explanation and no preview geometry. Drafts remain outside counts, history and exports until Apply; Cancel leaves the accepted document unchanged. The import section accepts a file or pasted JSON. A valid import is one undoable replacement, even when identical to the current document.
 
 If WebGL is unavailable, fails, or loses context, the same document stays editable through three exact orthographic projections and labelled DOM controls. Projection rectangles are selectable with Enter or Space. The hierarchy remains useful when small or overlapping projections are difficult to pick.
 

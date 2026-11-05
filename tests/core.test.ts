@@ -1,3 +1,4 @@
+import { initialSize, suggestNewBox } from '../src/placement';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { change, conflictPairs, containerVolume, createSession, demoDocument, extents, Fault, IDENTITY, importText, MAX_IMPORT_BYTES, multiply, occupancy, ORIENTATIONS, parseDocument, rotate, toJSON, undo, validate, volume, type Box, type Mat, type Vec } from '../src/core';
@@ -185,4 +186,19 @@ test('pre-source independent corner/unit-cell literal fixtures across24 rotation
     for(const [one,inside,expectedVolume] of [[a,insideA,volumeA],[b,insideB,volumeB]] as const){if(inside)assert.equal(volume(validate(doc([one],container))),expectedVolume);else assert.throws(()=>validate(doc([one],container)),fault('bounds'));}
     if(legal)assert.equal(volume(validate(doc([a,b],container))),volumeA+volumeB);else assert.throws(()=>validate(doc([a,b],container)),Fault);
   }
+});
+
+
+test('new-box suggestions are bounded, validated and do not mutate accepted work', () => {
+  const document=demoDocument(), before=toJSON(document);
+  const box=suggestNewBox(document,'new-1');
+  assert.ok(box);assert.deepEqual(box.position,[3000,0,0]);
+  validate({...document,boxes:[...document.boxes,box]});
+  assert.equal(toJSON(document),before);assert.deepEqual(suggestNewBox(document,'new-1'),box);
+  const full=validate({version:1,unit:'mm',container:[10,20,30],boxes:[{id:'full',label:'',size:[10,20,30],position:[0,0,0],orientation:IDENTITY}]});
+  assert.equal(suggestNewBox(full,'new-1'),null);
+  const empty=validate({...full,boxes:[]});
+  assert.deepEqual(initialSize(empty),[10,20,30]);assert.deepEqual(suggestNewBox(empty,'new-1')!.position,[0,0,0]);
+  const crowded=validate({version:1,unit:'mm',container:[200,1,1],boxes:Array.from({length:200},(_,i)=>({id:`b${i}`,label:'',size:[1,1,1],position:[i,0,0],orientation:IDENTITY}))});
+  assert.equal(suggestNewBox(crowded,'new-1'),null);
 });

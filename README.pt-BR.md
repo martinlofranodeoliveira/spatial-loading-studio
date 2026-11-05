@@ -94,3 +94,7 @@ O espaço técnico claro coloca a geometria entre uma lista estável e um inspet
 - Leitura e download de arquivos podem falhar; o último estado válido é preservado. Recarregar perde edições não exportadas. O validador público não isola objetos Proxy.
 
 Segurança: [relato privado de vulnerabilidade no GitHub](https://github.com/martinlofranodeoliveira/spatial-loading-studio/security/advisories/new). Contato geral: [site oficial](https://lofranotecnologia.com.br).
+
+## Adicionar com prévia
+
+**Adicionar caixa** procura uma posição inicial validada na origem e nas três faces positivas de cada caixa aceita: no máximo 601 candidatos, sem otimização de empacotamento. Na cena inicial, a sugestão é `[3000,0,0]` mm. As dimensões iniciais são limitadas ao volume. Não encontrar uma sugestão não prova falta de espaço; ajuste os campos. A prévia translúcida identificada (tracejada nas projeções) só aparece para um rascunho válido. Contagem, histórico e exportações continuam usando as caixas aplicadas. **Aplicar alterações** adiciona a caixa em uma operação; **Cancelar adição** preserva o documento.

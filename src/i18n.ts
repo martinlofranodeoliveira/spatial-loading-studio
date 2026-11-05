@@ -1,6 +1,7 @@
 import { Fault } from './core';
 export type Locale = 'pt' | 'en';
 export const pt = {
+  draftPreview: 'Rascunho não aplicado', draftInvalid: 'Sem prévia válida. Ajuste dimensões, posição ou ID; o documento aplicado está preservado. A sugestão inicial usa uma busca limitada, sem otimização de encaixe.', draftHelp: 'Prévia translúcida: ainda fora da contagem, do histórico e das exportações. Aplique para adicionar ou cancele.',
   title: 'Spatial Loading Studio', version: 'Desenvolvimento 0.1.0', language: 'Idioma',
   objects: 'Objetos', properties: 'Propriedades', volume: 'Volume delimitador',
   add: 'Adicionar caixa', remove: 'Remover caixa', undo: 'Desfazer', apply: 'Aplicar alterações',
@@ -27,6 +28,7 @@ export const pt = {
   operationStatus: 'Estado da operação', selected: 'Selecionada', measurement: 'Dimensões do volume', fileActions: 'Arquivos e histórico'
 };
 export const en: typeof pt = {
+  draftPreview: 'Unapplied draft', draftInvalid: 'No valid preview. Adjust dimensions, position, or ID; the applied document is preserved. The initial suggestion uses a bounded search, not packing optimization.', draftHelp: 'Translucent preview: excluded from counts, history, and exports. Apply to add or cancel.',
   title: 'Spatial Loading Studio', version: 'Development 0.1.0', language: 'Language',
   objects: 'Objects', properties: 'Properties', volume: 'Bounding volume',
   add: 'Add box', remove: 'Remove box', undo: 'Undo', apply: 'Apply changes',

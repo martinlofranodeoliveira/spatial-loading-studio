@@ -1,8 +1,8 @@
 import React from 'react';
-import { extents, type Document } from './core';
+import { extents, type Box, type Document } from './core';
 import { views } from './export';
 import { en, pt, type Locale } from './i18n';
-export function Projections({ document, selected, onSelect, locale }: { document: Document; selected: string; onSelect: (id: string) => void; locale: Locale }) {
+export function Projections({ document, selected, onSelect, locale, draftPreview }: { draftPreview?: Box; document: Document; selected: string; onSelect: (id: string) => void; locale: Locale }) {
   const t = locale === 'pt' ? pt : en;
   return <div className="projections">
     {views.map(view => {
@@ -20,6 +20,7 @@ export function Projections({ document, selected, onSelect, locale }: { document
               <title>{b.label} · {b.id} · {e.join(' × ')} mm · [{b.position.join(', ')}]</title>
             </rect>;
           })}
+          {draftPreview && <rect data-preview="unapplied" x={draftPreview.position[view.horizontal]} y={h - draftPreview.position[view.vertical] - extents(draftPreview)[view.vertical]} width={extents(draftPreview)[view.horizontal]} height={extents(draftPreview)[view.vertical]} fill="#235bd4" fillOpacity={.16} stroke="#235bd4" strokeDasharray="6 4" strokeWidth={2} vectorEffect="non-scaling-stroke" pointerEvents="none" aria-label={`${t.draftPreview} · ${draftPreview.id} · ${view.name}`}><title>{t.draftPreview} · {draftPreview.id} · {extents(draftPreview).join(' × ')} mm · [{draftPreview.position.join(', ')}]</title></rect>}
         </svg>
       </figure>;
     })}

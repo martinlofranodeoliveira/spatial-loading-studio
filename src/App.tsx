@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box as BoxIcon, Plus, Trash2, Undo2, Download as DownloadIcon, Upload, RotateCw, Check, X } from 'lucide-react';
-import { change, createSession, demoDocument, extents, Fault, IDENTITY, importText, MAX_IMPORT_BYTES, rotate, toJSON, undo, volume, containerVolume, type Session, type Vec } from './core';
+import { change, createSession, demoDocument, extents, Fault, IDENTITY, importText, MAX_IMPORT_BYTES, rotate, toJSON, undo, validate, volume, containerVolume, type Session, type Vec } from './core';
 import { browserDownload, toSVG, type Download } from './export';
 import { en, pt, errorText, type Locale } from './i18n';
 import { Viewport } from './Viewport';
+import { initialSize, suggestNewBox } from './placement';
 type Draft = { id: string; label: string; size: string[]; position: string[] };
 type Status = 'idle' | 'ready' | 'applied' | 'added' | 'removed' | 'imported' | 'undone' | 'noChange' | 'exported' | 'reading';
 function numbers(values: string[], field: string): Vec {
@@ -58,11 +59,21 @@ export function App({ capability, download = browserDownload }: { capability?: (
     catch (value) { setStatus('idle'); setError({ value, anchor: anchorFor(value, fallback) }); }
   }
   function beginAdd() {
+    readSequence.current++;
     let n = 1;
     while (doc.boxes.some(b => b.id === `new-${n}`)) n++;
-    setDraft({ id: `new-${n}`, label: '', size: ['1000', '800', '800'], position: ['0', '0', '0'] });
-    setAdding(true); setError(null);
+    const candidate = suggestNewBox(doc, `new-${n}`);
+    setDraft({ id: `new-${n}`, label: '', size: (candidate?.size ?? initialSize(doc)).map(String), position: (candidate?.position ?? [0, 0, 0]).map(String) });
+    setAdding(true); setError(null); setStatus('idle');
   }
+  function editDraft(next: Draft) { readSequence.current++; setDraft(next); }
+  const draftPreview = useMemo(() => {
+    if (!adding) return undefined;
+    try {
+      const candidate = { id: draft.id, label: draft.label, size: numbers(draft.size, 'size'), position: numbers(draft.position, 'position'), orientation: IDENTITY };
+      return validate({ ...doc, boxes: [...doc.boxes, candidate] }).boxes.find(b => b.id === draft.id);
+    } catch { return undefined; }
+  }, [adding, doc, draft]);
   function applyBox(event: React.FormEvent) {
     event.preventDefault();
     run(() => {
@@ -117,19 +128,19 @@ export function App({ capability, download = browserDownload }: { capability?: (
         <details className="import-panel"><summary><Upload aria-hidden="true" />{t.importTitle}</summary>
           <p>{t.importHelp}</p>
           <label htmlFor="import-file">{t.importFile}<input id="import-file" type="file" accept=".json,application/json" onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; if (file) void readFile(file); }} /></label>
-          <label htmlFor="import-json">{t.importText}<textarea id="import-json" value={json} maxLength={MAX_IMPORT_BYTES} onChange={event => setJSON(event.target.value)} spellCheck={false} /></label>
+          <label htmlFor="import-json">{t.importText}<textarea id="import-json" value={json} maxLength={MAX_IMPORT_BYTES} onChange={event => { readSequence.current++; setJSON(event.target.value); }} spellCheck={false} /></label>
           <button type="button" onClick={() => doImport(json)}>{t.importApply}</button>
         </details>
       </aside>
-      <Viewport document={doc} selected={adding ? '' : selected} onSelect={id => { setSelected(id); setAdding(false); setError(null); }} locale={locale} capability={capability} />
+      <Viewport document={doc} selected={adding ? '' : selected} onSelect={id => { setSelected(id); setAdding(false); setError(null); }} locale={locale} capability={capability} draftPreview={draftPreview} draftActive={adding} />
       <aside className="inspector">
         <details open><summary>{t.properties}</summary>
           {(box || adding) ? <form onSubmit={applyBox}>
             <div className="selection-context"><BoxIcon aria-hidden="true" /><strong>{adding ? t.newBox : box!.label || box!.id}</strong><span>{adding ? '' : box!.id}</span></div>
-            <label htmlFor="box-id">{t.id}<input id="box-id" value={draft.id} readOnly={!adding} maxLength={64} onChange={event => setDraft({ ...draft, id: event.target.value })} /></label>
-            <label htmlFor="box-label">{t.label}<input id="box-label" value={draft.label} maxLength={128} onChange={event => setDraft({ ...draft, label: event.target.value })} /></label>
-            <fieldset><legend>{t.baseDimensions}</legend>{[t.sizeX, t.sizeY, t.sizeZ].map((label, i) => numericField(`size-${i}`, label, draft.size[i], value => setDraft({ ...draft, size: draft.size.map((n, j) => j === i ? value : n) })))}</fieldset>
-            <fieldset><legend>{t.convention}</legend>{[t.positionX, t.positionY, t.positionZ].map((label, i) => numericField(`position-${i}`, label, draft.position[i], value => setDraft({ ...draft, position: draft.position.map((n, j) => j === i ? value : n) })))}</fieldset>
+            <label htmlFor="box-id">{t.id}<input id="box-id" value={draft.id} readOnly={!adding} maxLength={64} onChange={event => editDraft({ ...draft, id: event.target.value })} /></label>
+            <label htmlFor="box-label">{t.label}<input id="box-label" value={draft.label} maxLength={128} onChange={event => editDraft({ ...draft, label: event.target.value })} /></label>
+            <fieldset><legend>{t.baseDimensions}</legend>{[t.sizeX, t.sizeY, t.sizeZ].map((label, i) => numericField(`size-${i}`, label, draft.size[i], value => editDraft({ ...draft, size: draft.size.map((n, j) => j === i ? value : n) })))}</fieldset>
+            <fieldset><legend>{t.convention}</legend>{[t.positionX, t.positionY, t.positionZ].map((label, i) => numericField(`position-${i}`, label, draft.position[i], value => editDraft({ ...draft, position: draft.position.map((n, j) => j === i ? value : n) })))}</fieldset>
             <button className="primary" type="submit"><Check aria-hidden="true" />{t.apply}</button>
             {adding ? <button type="button" onClick={() => { setAdding(false); if (box) setDraft({ id: box.id, label: box.label, size: box.size.map(String), position: box.position.map(String) }); setError(null); }}><X aria-hidden="true" />{t.cancel}</button> : <>
               <div className="rotation-controls">{(['X', 'Y', 'Z'] as const).map(axis => <button type="button" key={axis} onClick={() => run(() => rotate(current.current, selected, axis), 'applied', 'position-0')}><RotateCw aria-hidden="true" />{t[`rotate${axis}`]}</button>)}</div>
@@ -140,7 +151,7 @@ export function App({ capability, download = browserDownload }: { capability?: (
           </form> : <p className="empty">{t.noSelection}</p>}
         </details>
         <details className="container-panel"><summary>{t.volume}</summary><form onSubmit={event => { event.preventDefault(); run(() => change(current.current, { ...current.current.document, container: numbers(container, 'container') }), 'applied', 'container-0'); }}>
-          {[t.containerX, t.containerY, t.containerZ].map((label, i) => numericField(`container-${i}`, label, container[i], value => setContainer(container.map((n, j) => i === j ? value : n))))}
+          {[t.containerX, t.containerY, t.containerZ].map((label, i) => numericField(`container-${i}`, label, container[i], value => { readSequence.current++; setContainer(container.map((n, j) => i === j ? value : n)); }))}
           <button type="submit">{t.resize}</button>
         </form></details>
       </aside>

@@ -4,7 +4,7 @@ import { OrbitBinding, NavigationToggle } from './Navigation';
 import { fitCamera } from './camera';
 import * as THREE from 'three';
 import { Focus, RotateCcw, Cuboid, PanelsTopLeft } from 'lucide-react';
-import type { Document, Vec } from './core';
+import type { Box, Document, Vec } from './core';
 import { SceneContent } from './Scene';
 import { Projections } from './Projections';
 import { en, pt, type Locale } from './i18n';
@@ -45,7 +45,7 @@ function Navigation({ dimensions }: { dimensions: Vec }) {
   const { camera, gl, invalidate } = useThree();
   return <OrbitBinding camera={camera} element={gl.domElement} target={[dimensions[0] / 2, dimensions[1] / 2, dimensions[2] / 2]} radius={Math.hypot(...dimensions) / 2} invalidate={invalidate} />;
 }
-export function Viewport({ document, selected, onSelect, locale, capability = browserCapability }: { document: Document; selected: string; onSelect: (id: string) => void; locale: Locale; capability?: () => boolean }) {
+export function Viewport({ document, selected, onSelect, locale, capability = browserCapability, draftPreview, draftActive = false }: { draftPreview?: Box; draftActive?: boolean; document: Document; selected: string; onSelect: (id: string) => void; locale: Locale; capability?: () => boolean }) {
   const t = locale === 'pt' ? pt : en;
   const [available, setAvailable] = useState<boolean | null>(null);
   const [mode, setMode] = useState<'3d' | '2d'>('3d');
@@ -56,6 +56,7 @@ export function Viewport({ document, selected, onSelect, locale, capability = br
   const failure = React.useCallback(() => { setAvailable(false); setLoaded(false); setNavigation(false); }, []);
   return <section className="workspace" aria-label={t.scene}>
     <div className="workspace-heading"><span>{t.convention}</span><span className="measurement" aria-label={t.measurement}>{document.container.join(' × ')} mm</span></div>
+    {draftActive && <div className="draft-preview-note" role="status" aria-label={t.draftPreview}><strong>{t.draftPreview}</strong><p>{draftPreview ? t.draftHelp : t.draftInvalid}</p></div>}
     <div className={`stage ${available && mode === '3d' ? 'webgl-stage' : 'plan-stage'}`}>
       {available === null ? <p role="status">{t.loading}</p> : available && mode === '3d' ? <>
         {!loaded && <p className="loading" role="status">{t.loading}</p>}
@@ -63,14 +64,14 @@ export function Viewport({ document, selected, onSelect, locale, capability = br
           <Canvas frameloop="demand" dpr={[1, 1.5]} camera={{ fov: 42, position: [10000, 7000, 10000], near: 1, far: 100000 }} onCreated={() => setLoaded(true)} fallback={<p>{t.fallback}</p>}>
             <color attach="background" args={['#f3f6f7']} />
             <ContextWatch onFailure={failure} />
-            <SceneContent document={document} selected={selected} onSelect={onSelect} />
+            <SceneContent document={document} selected={selected} onSelect={onSelect} draftPreview={draftPreview} />
             {navigation && <Navigation dimensions={document.container} />}
             <FitCamera dimensions={document.container} request={request} />
           </Canvas>
         </SceneBoundary>
       </> : <>
         {!available && <p className="fallback-note">{t.fallback}</p>}
-        <Projections document={document} selected={selected} onSelect={onSelect} locale={locale} />
+        <Projections document={document} selected={selected} onSelect={onSelect} locale={locale} draftPreview={draftPreview} />
       </>}
     </div>
     <div className="view-toolbar">
