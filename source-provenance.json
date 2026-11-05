@@ -1,0 +1,48 @@
+{
+  "project": "spatial-loading-studio",
+  "source_commit": "60ce5d88e923d04614adfd2147ba552d3e460fe3",
+  "source_inventory_sha256": "0da34e5e5937aab0db8c7006c8b856a4758bd0f544387c9be66e0e0206aad0f5",
+  "assets": [
+    {
+      "path": "assets/index-BMg_O58_.css",
+      "bytes": 10153,
+      "sha256": "b130f6b85a588c95f1fe449413857a1aa34b5758fad43b79b35b91bfb0ccb118"
+    },
+    {
+      "path": "assets/index-BscM1CsA.js",
+      "bytes": 1172944,
+      "sha256": "ee5d378018a78d61e20690c1db1be59373bc687b6e14b6d2e5dcc759007cfd29"
+    },
+    {
+      "path": "assets/public-sans-latin-ext-wght-normal-MQgHevqp.woff2",
+      "bytes": 18472,
+      "sha256": "3a00a32f0242b723dcea79935747d6d27dd93675d03ef23f470dfe274e79586a"
+    },
+    {
+      "path": "assets/public-sans-latin-wght-normal-DdeTHZLK.woff2",
+      "bytes": 26832,
+      "sha256": "5ed4d31c988e73b258894244f209069ebe77dc7e564861954b21198b6de90d68"
+    },
+    {
+      "path": "assets/public-sans-vietnamese-wght-normal-CtlIRbEm.woff2",
+      "bytes": 7716,
+      "sha256": "94593e69fad0885b2b0b74cd18d036c7e9cd6051b2256ab281a20f5bc9ccb46f"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1479,
+      "sha256": "6e78981aca666724f83e6fb8f8a5d79a3db4a15f93591e992c4ed7b94d854c81"
+    },
+    {
+      "path": "licenses/PublicSans-OFL.txt",
+      "bytes": 4503,
+      "sha256": "705a497c781f6463ff819abb513bb495f3fb05256f1d20321e3275813c0bafa5"
+    },
+    {
+      "path": "licenses/THIRD-PARTY.txt",
+      "bytes": 121289,
+      "sha256": "5910e5bf54ac29577bc31bbf22743b62079e941f3b5f85c8ea75af8449933e6d"
+    }
+  ],
+  "verification": "Offline technical gates passed; browser/WebGL visual QA remains pending."
+}
